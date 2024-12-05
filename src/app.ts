@@ -1,13 +1,21 @@
-import express from "express"
+import express, { NextFunction, Request, Response } from "express";
+import "express-async-errors"
+import { configKeys } from "./config/configKeys";
+import router from "./routes";
+import expressConfig from "./config/expressConfig";
+import { errorHandlingMiddleware, NotFoundError } from "@ticket-common/common";
 
-const app = express()
+const API_VERSION = configKeys.API_VERSION;
 
-app.use(express.json())
-app.use(express.urlencoded({extended:false}))
+const app = express();
+expressConfig(app, express);
 
-app.route('/')
-    .get((req,res)=>{
-        res.send("hello")
-    })
-    
-export default app
+app.use(`/${API_VERSION}`, router);
+app.use("/*", (req: Request, res: Response) => {
+  throw new NotFoundError();
+});
+
+// custom error handling function from package manually created.
+app.use(errorHandlingMiddleware);
+
+export default app;
