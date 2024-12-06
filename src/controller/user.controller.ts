@@ -12,14 +12,17 @@ const signup = async (req: Request, res: Response): Promise<void> => {
   if (!!hasEmail) throw new BadRequestError("Email Already Exist");
 
   const passHash = await passUtil.hash(password);
-  const userData = await UserModel.create({
+  await UserModel.create({
     userId: nanoid(),
     fullname,
     email,
     password: passHash,
   });
 
-  res.json(userData);
+  res.status(201).json({
+    status: "Success",
+    message: "Registered Successfully",
+  });
 };
 
 const signin = async (req: Request, res: Response): Promise<void> => {
@@ -35,7 +38,7 @@ const signin = async (req: Request, res: Response): Promise<void> => {
   if (!passCheck) throw new BadRequestError("Email and Password do not match!");
   const token = await jwt.sign(hasUser.userId as string);
 
-  res.json({ token });
+  res.json({ status: "Success", message: "SignIn Success", token });
 };
 
 export default { signup, signin };

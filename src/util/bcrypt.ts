@@ -9,7 +9,6 @@ const compare = async (suppliedPassword: string, hash: string) => {
   return await bcrypt.compare(suppliedPassword, hash);
 };
 
-
 export default {
     hash,
     compare

@@ -13,7 +13,7 @@ export const expressConfig = (app: Application, express: expressType): void => {
 //   app.set("trust proxy", 1);
   app.use(
     cors({
-      origin: ["http://localhost:4200"],
+      origin: ["http://localhost:3000"],
       credentials: true,
     })
   );
