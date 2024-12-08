@@ -4,6 +4,7 @@ import passUtil from "../util/bcrypt";
 import { nanoid } from "nanoid";
 import { BadRequestError } from "@ticket-common/common";
 import jwt from "../util/jwt";
+import { IJwtPayload } from "../types/types";
 
 const signup = async (req: Request, res: Response): Promise<void> => {
   const { fullname, email, password } = req.body;
@@ -36,7 +37,13 @@ const signin = async (req: Request, res: Response): Promise<void> => {
   );
 
   if (!passCheck) throw new BadRequestError("Email and Password do not match!");
-  const token = await jwt.sign(hasUser.userId as string);
+
+  const jwtPayload: IJwtPayload = {
+    userId: hasUser.userId as string,
+    fullname: hasUser.fullname as string,
+  };
+
+  const token = await jwt.sign(jwtPayload);
 
   res.json({ status: "Success", message: "SignIn Success", token });
 };

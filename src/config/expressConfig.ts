@@ -1,16 +1,28 @@
 import { Application } from "express";
-import { expressType } from "../types/types";
+import { expressType, IJwtPayload } from "../types/types";
 import { configKeys } from "./configKeys";
 import morgan from "morgan";
 import cors from "cors";
 import compression from "compression";
 import helmet from "helmet";
 
+declare module "jsonwebtoken" {
+  export interface JwtPayload {
+    data: IJwtPayload;
+  }
+}
+
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: IJwtPayload;
+  }
+}
+
 export const expressConfig = (app: Application, express: expressType): void => {
   if (configKeys.NODE_ENV !== "test" && configKeys.NODE_ENV !== "production") {
     app.use(morgan("dev"));
   }
-//   app.set("trust proxy", 1);
+  //   app.set("trust proxy", 1);
   app.use(
     cors({
       origin: ["http://localhost:3000"],
