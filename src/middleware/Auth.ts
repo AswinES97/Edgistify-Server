@@ -18,7 +18,7 @@ export const authMiddleware = async (
       req.user = payload?.data;
     })
     .catch((err) => {
-      // 401 error thrown
+      // 401 error thrown handled by error handling middleware
       throw new UnauthorizedError("Your Session Expired");
     });
 

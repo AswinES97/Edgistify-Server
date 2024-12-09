@@ -19,6 +19,7 @@ declare module "express-serve-static-core" {
 }
 
 export const expressConfig = (app: Application, express: expressType): void => {
+
   if (configKeys.NODE_ENV !== "test" && configKeys.NODE_ENV !== "production") {
     app.use(morgan("dev"));
   }
@@ -29,6 +30,7 @@ export const expressConfig = (app: Application, express: expressType): void => {
       credentials: true,
     })
   );
+  
   // compression is not automatically enabled
   // so compression middleware enables any alogritham supported by browser
   app.use(compression());

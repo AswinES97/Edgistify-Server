@@ -6,8 +6,8 @@ import expressConfig from "./config/expressConfig";
 import { errorHandlingMiddleware, NotFoundError } from "@ticket-common/common";
 
 const API_VERSION = configKeys.API_VERSION;
-
 const app = express();
+
 expressConfig(app, express);
 
 app.use(`/${API_VERSION}`, mainRouter);
@@ -19,3 +19,6 @@ app.use("/*", (req: Request, res: Response) => {
 app.use(errorHandlingMiddleware);
 
 export default app;
+
+// express-async-error packages forward all async errors 
+// to the custom error handling middleware. so try catch pattern is ommited deliberately
