@@ -5,6 +5,7 @@ import { nanoid } from "nanoid";
 import { BadRequestError } from "@ticket-common/common";
 import jwt from "../util/jwt";
 import { IJwtPayload } from "../types/types";
+import { CartModel } from "../model/cart.model";
 
 const signup = async (req: Request, res: Response): Promise<void> => {
   const { fullname, email, password } = req.body;
@@ -13,12 +14,17 @@ const signup = async (req: Request, res: Response): Promise<void> => {
   if (!!hasEmail) throw new BadRequestError("Email Already Exist");
 
   const passHash = await passUtil.hash(password);
+  const userId = nanoid()
   await UserModel.create({
-    userId: nanoid(),
+    userId,
     fullname,
     email,
     password: passHash,
   });
+
+  await CartModel.create({
+    userId,
+  })
 
   res.status(201).json({
     status: "Success",

@@ -1,10 +1,21 @@
 import { Request, Response } from "express";
-import { CardModel } from "../model/cart.model";
+import { CartModel } from "../model/cart.model";
 import { ProductModel } from "../model/product.model";
 
 const getCartItems = async (req: Request, res: Response) => {
   const userId = req.user?.userId;
-  const cartData = await CardModel.aggregate([
+
+  const cartItems = await CartModel.findOne({ userId });
+  if (cartItems?.products.length === 0) {
+    res.json({
+      status: "Success",
+      message: "No Items in Cart",
+      data: [],
+    });
+    return;
+  }
+
+  const cartData = await CartModel.aggregate([
     {
       $match: {
         userId,
@@ -47,7 +58,11 @@ const getCartItems = async (req: Request, res: Response) => {
     },
   ]);
 
-  res.json(cartData[0].products);
+  res.json({
+    status: "Success",
+    message: "No Items in Cart",
+    data: cartData[0].products,
+  });
   return;
 };
 
@@ -65,43 +80,23 @@ const addToCart = async (req: Request, res: Response) => {
     return;
   }
 
-  const userCartData = await CardModel.findOne({ userId });
+  const userCartData = await CartModel.findOne({ userId });
 
-  // checking if already cart for user exist.
-  if (userCartData) {
-    const doesProductAlreadyExistInCart = userCartData?.products.find(
-      (productDetails: any) => productDetails.productId === productId
-    );
+  const doesProductAlreadyExistInCart = userCartData?.products.find(
+    (productDetails: any) => productDetails.productId === productId
+  );
 
-    if (!!doesProductAlreadyExistInCart) {
-      userCartData?.products.map((productDetails: any) => {
-        if (productDetails.productId === productId) {
-          productDetails.quantity += quantity;
-        }
-      });
-    } else {
-      userCartData?.products.push(req.body);
-    }
-
-    await userCartData?.save();
-
-    res.json({
-      status: "Success",
-      message: `Added to Cart`,
+  if (!!doesProductAlreadyExistInCart) {
+    userCartData?.products.map((productDetails: any) => {
+      if (productDetails.productId === productId) {
+        productDetails.quantity += quantity;
+      }
     });
-
-    return;
+  } else {
+    userCartData?.products.push(req.body);
   }
 
-  await CardModel.create({
-    userId,
-    products: [
-      {
-        productId,
-        quantity: Number(quantity),
-      },
-    ],
-  });
+  await userCartData?.save();
 
   res.json({
     status: "Success",

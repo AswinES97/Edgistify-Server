@@ -4,17 +4,14 @@ const cartSchema = new mongoose.Schema(
   {
     userId: {
       type: String,
-      required: true,
     },
     products: [
       {
         productId: {
           type: Number,
-          required: true,
         },
         quantity: {
           type: Number,
-          required: true,
         },
       },
     ],
@@ -36,4 +33,4 @@ const cartSchema = new mongoose.Schema(
 
 const cart = mongoose.model("cart", cartSchema);
 
-export { cart as CardModel };
+export { cart as CartModel };
